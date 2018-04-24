@@ -415,7 +415,45 @@ C++程序还会用到的一项预处理功能是{\bfseries{头文件保护符}}�
 一旦检测结果为真，则会执行后续操作直到遇到{\bfseries{\#endif}}指令为止。%
 一般把预处理变量的名字全部大写。
 
+\section{命名空间using}
+形如using namespace::xxxx，表示编译器应从操作符左侧名字对应的作用域中寻找右侧那个名字。%
+因此，XIAOHAI::addChain(par)的意思就是要使用命名空间XIAOHAI中的名字addChain的函数。%
+\subsection{每个名字都需要独立的using声明}
+每个using声明引入命名空间中的一个成员。%
+例如：
+\begin{lstlisting}
+  using std::cin;
+  using std::cout;
+  using std::vector;
+\end{lstlisting}
+用到的每个名字都必须有自己的声明语句，%
+而且每句话都以分号结束。%
+\subsection{头文件不应包含using声明}
+位于头文件的代码，一般来说不应该使用using声明。%
+如果使用了，反而可能由于不经意的包含了一些名字，%
+造成可能产生始料未及的名字冲突。%
 
+\section{数组}
+数组是存放类型相同的对象的容器，%
+这些对象本身没有名字，只能通过位置进行访问。%
+数组是一种复合类型。%
+数组的声明形式为a[d]，其中a是数组的名字，%
+d是数组的维度。%
+维度说明了数组中元素的个数，%
+因此必须大于0，%
+数组中元素的个数也属于数组类型的一部分，%
+编译的时候维度必须是已知的。%
+也就是说，维度必须是一个常量表达式(constexpr)。%
+\begin{lstlisting}
+  unsigned int cnt = 42; // 不是常量表达式。
+  constexpr unsigned sz = 42; // 是常量表达式
+  int arr[10]; // OK
+  int *parr[sz]; // 含有42个整型指针的数组
+  string bad[cnt]; // errooooooooooooooooor
+\end{lstlisting}
+\alertwarning{和内置类型的变量一样，如果在函数内部定义了某种类型的数组，%
+  那么默认初始化会令数组含有未定义的值。
+}
 
 
 
