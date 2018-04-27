@@ -1,4 +1,43 @@
 \chapter{基础知识}
+\section{简单语句}
+表达式语句的作用是执行表达式并丢弃掉求值结果。%
+\subsection{复合语句}
+复合语句是指花括号括起来的语句和声明的序列，%
+复合语句也被称为块。一个块就是一个作用域，%
+在块中引入的名字只能在块内部以及嵌套在块内的子块中进行使用。%
+通常，名字在有限的作用域中可见，该区域从名字定义处开始，%
+到名字所在的块的结束为止。%
+\subsection{语句作用域}
+可以在if、switch、while和for语句的控制结构内定义变量。%
+定义在控制结构当中的变量只在相应语句的内部可见，%
+一旦语句结束，变量也就超出其作用域了。%
+\section{条件语句}
+C++提供了两种条件执行的语句。%
+一种是if语句，它根据条件决定控制流。%
+另一种是switch语句，它计算一个整型表达式的值，%
+然后根据这个值从几条执行路径中选择一条。
+\subsection{if语句}
+if语句的作用是：判断一个指定的条件是否为真，根据判断结果决定是否执行另外一条语句。%
+if语句包含两种形式：一种包含else分支，另外一种没有。%
+常见的语法形式为：
+\begin{lstlisting}
+  if(condition)
+  {
+    statement
+  }
+\end{lstlisting}
+{\bfseries{if else语句的形式是}}
+\begin{lstlisting}
+  if(condition)
+  {
+    statement;
+  }
+  else
+  {
+    statement2;
+  }
+\end{lstlisting}
+条件检测部分必须用括号括起来。
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t
