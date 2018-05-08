@@ -65,6 +65,323 @@ point->mem的执行过程如下所是：
   }
 \end{itemize}
 \alertinfo{重载的箭头运算符必须返回类的指针或者自定义了箭头运算符的某个类的对像。}
+
+\section{OOP概述}
+面向对象程序设计(object-oriented programming)的核心思想是{\bfseries{数据抽象、继承和动态绑定}}。%
+\begin{enumerate}
+\item{通过使用数据抽象，我们可以使接口与实现分离。%
+  }
+\item{使用继承可以定义相似的类型并对其相似关系建模。%
+  }
+\item{通过使用动态绑定，可以在一定程度上忽略相似类型的区别，而以统一的方式使用它们的对象。%
+  }
+\end{enumerate}
+\subsection{继承}
+通过继承联系在一起的类构成一种层次关系。%
+通常在层次关系的根部由一个基类，%
+其他类则直接或间接地从基类继承而来，%
+这些继承得到的类称为派生类。%
+基类负责定义在层次关系中所有类共同拥有的成员，%
+而每个派生类定义各自特有的成员。%
+\par
+{\color{red}在C++语言中，基类将类型相关的函数与派生类不做改变直接继承的函数区分对待。%
+对于某些函数，%
+基类希望派生类各自定义适合自身的版本，%
+此时基类就将这些函数声明称虚函数。%
+}
+\alertinfo{派生类必须在其内部对所有的重新定义的虚函数进行声明，%
+  派生类可以在这样的函数之前加上关键字virtual，%
+  但是并不是必须这样做的。%
+  C++11规定允许派生类显式地注明它将使用哪个成员函数改写基类的虚函数，%
+  具体措施是在该函数的形参列表之后增加一个override关键字(在对象的const属性之后)。%
+}
+\subsection{动态绑定}
+\alertinfo{在C++语言中，当我们使用基类的引用或指针调用一个虚函数时将发生动态绑定。}
+
+\section{定义基类和派生类}
+\subsection{定义基类}
+\begin{lstlisting}
+  class Quote{
+    public:
+    Quote() = default;
+    Quote(const std::string &book, double sales_price) :
+      bookNo(book), price(sales_price){ }
+    std::string isbn() const
+    {
+      return bookNo;
+    }
+    virtual double net_price(std::size_t n) const
+    {
+      return (n * price);
+    }
+    virtual ~Quote() = default;
+
+    private:
+      std::string bookNo;
+
+    protected:
+      double price = 0.;
+  };
+\end{lstlisting}
+\alertwarning{基类通常都应该定义一个徐析构函数，%
+  即使该函数不执行任何实际操作也是如此。
+}
+\subsubsection{成员函数与继承}
+在C++语言中，基类必须将他的两种成员函数区分对待：
+\begin{itemize}
+\item{一种是基类希望派生类进行覆盖的函数。}
+\item{另外一种是基类希望派生类直接继承而不要改变的函数。}
+\end{itemize}
+对于前者，基类通常将其定义为虚函数。%
+基类通过在其成员函数的声明语句之前将上关键字virtual使得该函数执行动态绑定。%
+任何构造函数之外的非静态函数都可以是虚函数。
+{\color{red}关键字virtual只能出现在类内部的声明语句之前而不能出现用于类外部的函数定义。%
+  如果基类把一个函数声明成虚函数，则该函数在派生类中隐式地也是虚函数。%
+}
+\subsubsection{访问控制与继承}
+派生类可以继承定义在基类中的成员，%
+但是派生类的成员函数不一定有访问权限访问从基类继承而来的成员。%
+和其他使用基类的代码一样，%
+派生类能访问公有成员，%
+而不能访问私有成员。%
+不过在某些时候基类中还有这样一种成员，%
+基类希望它的派生类有权限访问该成员，%
+同时禁止其他用户访问。%
+我们用{\bfseries{受保护的}}访问运算符说明这样的成员。
+
+\section{派生类构造函数}
+尽管在派生类对象中含有从基类继承而来的成员，%
+但是派生类并不能直接初始化这些成员。%
+和其他创建了基类对象的代码一样，%
+派生类也需要使用基类的构造函数来初始化它的基类部分。
+\alertwarning{每个类控制它自己的成员如何进行初始化。}
+派生类对象的基类部分与派生类对象自己的数据成员都是在构造函数的初始化阶段执行初始化操作的。%
+类似于我们初始化成员的过程，%
+派生类构造函数同样是通过初始化列表来将实参传递给基类的构造函数的。%
+例如：
+\begin{lstlisting}
+  Bulk_quote(const std::string &book, double p, std::size_t qty, double disc) :
+   Quote(book, p), min_qty(qty), discount(disc) { }
+\end{lstlisting}
+{\color{red}{首先初始化基类的部分，然后按照声明的顺序依次来初始化派生类的成员。}}
+
+\section{继承与静态成员}
+
+\section{派生类的声明}
+
+\section{被用作基类的类}
+
+\section{防止继承的发生}
+
+\section{类型转换与继承}
+\subsection{静态类型与动态类型}
+\subsection{不存在从基类向派生类的隐式类型转换}
+\subsection{在对象之间不存在类型转换}
+
+\section{虚函数}
+\subsection{对需要函数的调用只能在运行时才被解析}
+\subsection{派生类中的虚函数}
+\subsection{find和override说明符}
+\subsection{虚函数与默认实参}
+\subsection{回避虚函数机制}
+
+\section{抽象基类}
+\subsection{纯虚函数}
+和普通的虚函数不一样，%
+一个纯虚函数无需定义。%
+我们通过在函数体的位置(即在声明语句的分号之前)书写=0就可以将一个虚函数说明为纯虚函数了。%
+其中，=0只能出现在类内部的虚函数声明语句处:
+\begin{lstlisting}
+  class Quote{
+    public:
+    Quote() = default;
+    Quote(const std::string &book, double sales_price) :
+    bookNo(book), price(sales_price) { }
+    virtual ~Quote() = default;
+    std::string isbn() const {
+      return bookNo;
+    }
+
+    virtual double net_price(std::size_t n) const{
+      return n * price;
+    }
+
+    private:
+    std::string bookNo;
+    protected:
+    double price = 0.0;
+  };
+
+  class Disc_quote : public Quote{
+    public:
+    Disc_quote() = default;
+    Disc_quote(const std::string &book, double price, std::size_t qty, double disc)
+    : Quote(book, price), quantity(qty), discount(disc) { }
+    double net_price(std::size_t) const = 0;
+
+    protected:
+    std::size_t quantity = 0;
+    double discount = 0.0;
+  };
+\end{lstlisting}
+和我们之前定义的Bulk\_quote类一样，%
+Disc\_quote也分别定义了一个默认构造函数和一个接受四个参数的构造函数。%
+尽管我们不能定义这个类的对象，%
+但是Disc\_quote的派生类构造函数将会使用Disc\_quote的构造函数来构建各个派生类对象的Disc\_quote部分。%
+其中，接受四个参数的构造函数将前两个参数传递给Quote的构造函数，%
+然后直接初始化自己的成员discount和quantity。%
+默认构造函数则对这些成员进行默认初始化。%
+\alertwarning{
+  值的注意的是，我们也可以为纯虚函数提供定义，%
+  不过函数体必须定义在类的外部。%
+  也就是说，我们不能在类的内部为一个=0的函数提供函数体。%
+}
+\subsection{含有纯虚函数的类是抽象基类}
+含有纯虚函数的类是{\bfseries{抽象基类}}。%
+抽象基类负责定义接口，而后续的其他类可以覆盖该接口。%
+我们不能创建一个抽象基类的对象。%
+\alertinfo{
+  我们不能创建抽象基类的对象。%
+}
+\subsection{派生类构造函数只初始化它的直接基类}
+{\color{red}{\large{每个类各自控制其对象的初始化过程，派生类构造函数只初始化它的直接基类。}}}
+\section{访问控制与继承}
+每个类分别控制自己的成员初始化过程。%
+与之类似，每个类还控制着其成员对于派生类来说是否可访问。%
+\subsection{受保护的成员}
+\begin{enumerate}
+\item{和私有成员类似，受保护的成员对于类的用户来说是不可访问的。}
+\item{和共有成员类似，受保护的成员对于派生类的成员和友元来说是可以访问的。}
+\item{派生类的成员或友元只能通过派生类对象来访问基类的受保护成员。%
+    派生类对于一个基类对象的受保护成员没有任何访问权限。
+  }
+\end{enumerate}
+例如：
+\begin{lstlisting}
+  class Base{
+    protected:
+    int prot_mem;
+  };
+
+  class Sneaky : public Base{
+    friend void clobber(Sneaky&);
+    friend void clobber(Base&);
+    int j;
+  };
+  /// 正确
+  void clobber(Sneaky &s) { s.j = s.prot_mem = 0;}
+  /// 错误
+  void clobber(Base &b) { b.prot_mem = 0;}
+\end{lstlisting}
+\alertinfo{
+  派生类的成员和友元只能访问{\color{red}派生类对象中}的基类部分的受保护成员，%
+  对于普通的{\color{red}基类对象中}的成员不具有特殊的访问权限。%
+}
+\subsection{公有、私有和受保护继承}
+某个类对其继承而来的成员的访问权限受到两个因素影响：
+\begin{itemize}
+\item{基类中该成员的访问说明符。}
+\item{在派生类的派生列表中的访问说明符。}
+\end{itemize}
+\begin{lstlisting}
+  class Base{
+    public:
+        void pub_mem();
+    protected:
+        int prot_mem;
+    private:
+        char priv_mem;
+  };
+
+  struct Pub_Derv : public Base{
+    /// 正确，派生类能访问受保护的成员。
+    int f() { return prot_mem;}
+    /// 错误，私有成员对于派生类而言是不可访问的。
+    char g() {return priv_meme;}
+  };
+
+  struct Priv_Derv : private Base{
+    /// 正确，private不影响派生类的访问权限。
+    int f1() const { return prot_mem;}
+  };
+\end{lstlisting}
+派生访问说明符对于派生类的成员能否访问其直接基类的成员没什么影响。%
+对基类成员的访问权限只与基类中的访问说明符有关。%
+Pub\_Derv和Priv\_Derv都能访问受保护的成员prot\_mem，%
+同时它们都不能访问私有成员priv\_mem。%
+\par
+派生访问说明符的目的是控制派生类用户(包括派生类的派生类在内)对于基类成员的访问权限：
+\begin{lstlisting}
+  Pub_Derv d1; /// 继承自Base的成员是public的
+  Priv_Derv d2; /// 继承自Base的成员是private的
+  d1.pub_mem(); /// 正确
+  d2.pub_mem(); /// 错误，pub_mem在派生类中是private的
+\end{lstlisting}
+Pub\_Derv和Priv\_Derv都继承了pub\_mem函数。%
+如果继承是公有的，则成员将遵循其原有的访问说明符，%
+此时d1可以调用pub\_mem。%
+在Priv\_Derv中，Base的成员是私有的，因此类的用户不能调用pub\_mem。%
+\par
+派生访问说明符还可以控制继承自派生类的新类的访问权限：
+\begin{lstlisting}
+  struct Derived_from_Public : public Pub_Derv{
+    /// 正确，prot_mem在Pub_Derv中仍是受保护的。
+    int use_base() {return prot_mem;}
+  };
+  struct Derived_from_Private : public Priv_Derv{
+    /// 错误
+    int use_base() {return prot_mem;}
+  };
+\end{lstlisting}
+Pub\_Derv的派生类之所以能访问Base的prot\_mem成员是因为该成员在Pub\_Derv中仍然是受保护的。%
+相反，Priv\_Derv的派生类无法执行类的访问，%
+对于它们来说，%
+Priv\_Derv继承自Base的所有成员都是私有的。%
+\par
+假设我们之前还定义了一个名为Prot\_Derv的类，%
+它采用受保护继承，%
+则Base的所有公有成员在新定义的类中都是受保护的。%
+Prot\_Derv的用户不能访问pub\_mem，%
+但是Prot\_Derv的成员和友元可以访问那些继承而来的成员。%
+\subsection{派生类向基类转换的可访问性}
+派生类向基类转换是否可访问由使用该转换的代码决定，%
+同时派生类的派生访问说明符也会有影响。%
+假定D继承自B：
+\begin{enumerate}
+\item{只有当D公有地继承B时，%
+    用户代码才能使用派生类向基类的转换；%
+    如果D继承B的方式是保护的或者私有的，%
+    则用户代码不能使用该转换。
+  }
+\item{不论D以什么方式继承B，D的成员函数和友元都能使用派生类向基类的转换；%
+    派生类向其直接基类的类型转换对于派生类的成员和友元来说永远是可访问的。%
+  }
+\item{如果D继承B的方式是公有的或者受保护的，%
+    则D的派生类的成员和友元可以使用D向B的类型转换，%
+    反之，如果D继承B的方式是私有的，则不能使用。%
+  }
+\end{enumerate}
+\alertinfo{
+  {\color{seagreen}不考虑继承的话，我们可以认为一个类有两种不同的用户：普通用户和类的实现着。%
+  其中，普通用户编写的代码使用类的对象，%
+  这部分代码只能访问类的公有成员；%
+  实现着则负责编写类的成员和友元的代码，%
+  成员和友元即能访问类的公有部分，%
+  也能访问类的私有实现部分。}%
+  {\color{red}如果进一步考虑继承的话就会出现第三种用户，即派生类。%
+  基类把它希望派生类能够使用的那部分声明成受保护的。%
+  普通用户不能访问受保护的成员，%
+  而派生类及其友元仍旧不能访问私有成员。}%
+  {\color{magenta}和其他类一样，基类应该将其接口成员声明为公有的；%
+  同时将属于其实现的部分分成两组：一组可供派生类访问，%
+  另一组只能由基类及其基类的友元访问。%
+  对于前者应该声明为受保护的，%
+  这样派生类就能在实现自己的功能时使用基类的这些操作和数据；%
+  对于后者应该声明为私有的。}
+}
+
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t
